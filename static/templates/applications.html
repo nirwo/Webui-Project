@@ -1,0 +1,80 @@
+<div class="bg-white shadow rounded-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Applications</h2>
+        <div class="flex space-x-4">
+            <label class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer">
+                Import CSV
+                <input type="file" class="hidden" accept=".csv" @change="handleFileUpload">
+            </label>
+            <button @click="showAddModal = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                Add Application
+            </button>
+        </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Web UI</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DB Port</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="app in applications" :key="app.id">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ app.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ app.owner }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ app.web_ui }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ app.db_port }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                              :class="getStatusClass(app.status)">
+                            {{ app.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button @click="verifyShutdown(app.id)" 
+                                class="text-blue-600 hover:text-blue-900"
+                                v-if="!app.shutdown_verified">
+                            Verify Shutdown
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Application Modal -->
+    <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h3 class="text-lg font-semibold mb-4">Add New Application</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Name</label>
+                    <input v-model="newApp.name" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Owner</label>
+                    <input v-model="newApp.owner" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Web UI</label>
+                    <input v-model="newApp.web_ui" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">DB Port</label>
+                    <input v-model="newApp.db_port" type="number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button @click="showAddModal = false" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700">Cancel</button>
+                <button @click="addApplication" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Add</button>
+            </div>
+        </div>
+    </div>
+</div>

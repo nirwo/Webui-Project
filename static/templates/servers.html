@@ -1,0 +1,81 @@
+<div class="bg-white shadow rounded-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Servers</h2>
+        <div class="flex space-x-4">
+            <label class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer">
+                Import CSV
+                <input type="file" class="hidden" accept=".csv" @change="handleFileUpload">
+            </label>
+            <button @click="showAddServerModal = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                Add Server
+            </button>
+        </div>
+    </div>
+
+    <!-- Servers Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hostname</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="server in servers" :key="server.id">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ server.hostname }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ server.ip_address }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ getApplicationName(server.app_id) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                              :class="server.ping_status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                            {{ server.ping_status ? 'Online' : 'Offline' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button @click="pingServer(server)" 
+                                class="text-blue-600 hover:text-blue-800 mr-3">
+                            Ping
+                        </button>
+                        <button @click="editServer(server)" 
+                                class="text-blue-600 hover:text-blue-800">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Server Modal -->
+    <div v-if="showAddServerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h3 class="text-lg font-semibold mb-4">Add New Server</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Hostname</label>
+                    <input v-model="newServer.hostname" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">IP Address</label>
+                    <input v-model="newServer.ip_address" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Application</label>
+                    <select v-model="newServer.app_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <option v-for="app in applications" :key="app.id" :value="app.id">
+                            {{ app.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button @click="showAddServerModal = false" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700">Cancel</button>
+                <button @click="addServer" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
